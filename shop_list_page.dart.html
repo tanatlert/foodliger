@@ -1,0 +1,85 @@
+<html>
+<head>
+<title>shop_list_page.dart</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.s0 { color: #bcbec4;}
+.s1 { color: #6aab73;}
+.s2 { color: #bcbec4;}
+.s3 { color: #cf8e6d;}
+.s4 { color: #2aacb8;}
+.s5 { color: #7a7e85;}
+</style>
+</head>
+<body bgcolor="#1e1f22">
+<table CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<tr><td><center>
+<font face="Arial, Helvetica" color="#000000">
+shop_list_page.dart</font>
+</center></td></tr></table>
+<pre><span class="s0">import </span><span class="s1">'package:flutter/material.dart'</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">'package:foodliger/pages/menu_page.dart'</span><span class="s2">;</span>
+
+<span class="s3">class </span><span class="s0">ShopListPage </span><span class="s3">extends </span><span class="s0">StatefulWidget </span><span class="s2">{</span>
+  <span class="s3">const </span><span class="s0">ShopListPage</span><span class="s2">({</span><span class="s3">super</span><span class="s2">.</span><span class="s0">key</span><span class="s2">});</span>
+
+  <span class="s0">@override</span>
+  <span class="s0">State</span><span class="s2">&lt;</span><span class="s0">ShopListPage</span><span class="s2">&gt; </span><span class="s0">createState</span><span class="s2">() =&gt; </span><span class="s0">_ShopListPageState</span><span class="s2">();</span>
+<span class="s2">}</span>
+
+<span class="s3">class </span><span class="s0">_ShopListPageState </span><span class="s3">extends </span><span class="s0">State</span><span class="s2">&lt;</span><span class="s0">ShopListPage</span><span class="s2">&gt; {</span>
+  <span class="s0">List</span><span class="s2">&lt;</span><span class="s0">String</span><span class="s2">&gt; </span><span class="s0">shopName </span><span class="s2">= [</span>
+    <span class="s1">'Sho ri'</span><span class="s2">, </span><span class="s1">'BuB-pa'</span><span class="s2">, </span><span class="s1">'Healti plus'</span><span class="s2">, </span><span class="s1">'TONG-DONE NOODLE'</span><span class="s2">, </span><span class="s1">'BAKE BAR'</span><span class="s2">,</span>
+    <span class="s1">'KRUE-PA-TOR'</span><span class="s2">, </span><span class="s1">'(A7)'</span><span class="s2">, </span><span class="s1">'JUKI'</span><span class="s2">, </span><span class="s1">'BLACKLIST COFFEE'</span><span class="s2">, </span><span class="s1">'Stewed Pork Leg on Rice'</span><span class="s2">,</span>
+    <span class="s1">'Eleven'</span><span class="s2">, </span><span class="s1">'One-Dish Meals'</span><span class="s2">, </span><span class="s1">'CHONGKO'</span><span class="s2">, </span><span class="s1">'Halal Food'</span><span class="s2">,</span>
+    <span class="s1">'Jae Porn Delicious Restaurant'</span><span class="s2">, </span><span class="s1">'AIM AROI'</span>
+  <span class="s2">];</span>
+
+  <span class="s0">@override</span>
+  <span class="s0">Widget build</span><span class="s2">(</span><span class="s0">BuildContext context</span><span class="s2">) {</span>
+    <span class="s3">return </span><span class="s0">Padding</span><span class="s2">(</span>
+      <span class="s0">padding</span><span class="s2">: </span><span class="s3">const </span><span class="s0">EdgeInsets</span><span class="s2">.</span><span class="s0">all</span><span class="s2">(</span><span class="s4">20.0</span><span class="s2">),</span>
+      <span class="s0">child</span><span class="s2">: </span><span class="s0">GridView</span><span class="s2">.</span><span class="s0">builder</span><span class="s2">(</span>
+        <span class="s0">gridDelegate</span><span class="s2">: </span><span class="s3">const </span><span class="s0">SliverGridDelegateWithFixedCrossAxisCount</span><span class="s2">(</span>
+          <span class="s0">crossAxisCount</span><span class="s2">: </span><span class="s4">2</span><span class="s2">,</span>
+          <span class="s0">mainAxisSpacing</span><span class="s2">: </span><span class="s4">20</span><span class="s2">,</span>
+          <span class="s0">crossAxisSpacing</span><span class="s2">: </span><span class="s4">20</span><span class="s2">,</span>
+          <span class="s0">childAspectRatio</span><span class="s2">: </span><span class="s4">1</span><span class="s2">,</span>
+        <span class="s2">),</span>
+        <span class="s0">itemCount</span><span class="s2">: </span><span class="s0">shopName</span><span class="s2">.</span><span class="s0">length</span><span class="s2">,</span>
+        <span class="s0">itemBuilder</span><span class="s2">: (</span><span class="s0">context</span><span class="s2">, </span><span class="s0">index</span><span class="s2">) {</span>
+          <span class="s3">return </span><span class="s0">InkWell</span><span class="s2">(</span>
+            <span class="s0">onTap</span><span class="s2">: () {</span>
+              <span class="s5">// Navigate to the MenuPage and pass the index as shopId</span>
+              <span class="s0">Navigator</span><span class="s2">.</span><span class="s0">push</span><span class="s2">(</span>
+                <span class="s0">context</span><span class="s2">,</span>
+                <span class="s0">MaterialPageRoute</span><span class="s2">(</span>
+                  <span class="s0">builder</span><span class="s2">: (</span><span class="s0">context</span><span class="s2">) =&gt; </span><span class="s0">MenuPage</span><span class="s2">(</span><span class="s0">index</span><span class="s2">: </span><span class="s0">index</span><span class="s2">), </span><span class="s5">// Pass index</span>
+                <span class="s2">),</span>
+              <span class="s2">);</span>
+              <span class="s0">print</span><span class="s2">(</span><span class="s0">shopName</span><span class="s2">[</span><span class="s0">index</span><span class="s2">]);</span>
+            <span class="s2">},</span>
+            <span class="s0">child</span><span class="s2">: </span><span class="s0">Container</span><span class="s2">(</span>
+              <span class="s0">color</span><span class="s2">: </span><span class="s0">Colors</span><span class="s2">.</span><span class="s0">green</span><span class="s2">[</span><span class="s4">200</span><span class="s2">],</span>
+              <span class="s0">child</span><span class="s2">: </span><span class="s0">Center</span><span class="s2">(</span>
+                <span class="s0">child</span><span class="s2">: </span><span class="s0">Padding</span><span class="s2">(</span>
+                  <span class="s0">padding</span><span class="s2">: </span><span class="s3">const </span><span class="s0">EdgeInsets</span><span class="s2">.</span><span class="s0">all</span><span class="s2">(</span><span class="s4">18.0</span><span class="s2">),</span>
+                  <span class="s0">child</span><span class="s2">: </span><span class="s0">Text</span><span class="s2">(</span>
+                    <span class="s0">shopName</span><span class="s2">[</span><span class="s0">index</span><span class="s2">],</span>
+                    <span class="s0">style</span><span class="s2">: </span><span class="s0">TextStyle</span><span class="s2">(</span>
+                      <span class="s0">color</span><span class="s2">: </span><span class="s0">Colors</span><span class="s2">.</span><span class="s0">green</span><span class="s2">[</span><span class="s4">800</span><span class="s2">],</span>
+                      <span class="s0">fontSize</span><span class="s2">: </span><span class="s4">24</span><span class="s2">,</span>
+                    <span class="s2">),</span>
+                  <span class="s2">),</span>
+                <span class="s2">),</span>
+              <span class="s2">),</span>
+            <span class="s2">),</span>
+          <span class="s2">);</span>
+        <span class="s2">},</span>
+      <span class="s2">),</span>
+    <span class="s2">);</span>
+  <span class="s2">}</span>
+<span class="s2">}</span>
+</pre>
+</body>
+</html>

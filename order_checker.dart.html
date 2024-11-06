@@ -1,0 +1,87 @@
+<html>
+<head>
+<title>order_checker.dart</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.s0 { color: #bcbec4;}
+.s1 { color: #6aab73;}
+.s2 { color: #bcbec4;}
+.s3 { color: #7a7e85;}
+.s4 { color: #cf8e6d;}
+.s5 { color: #2aacb8;}
+</style>
+</head>
+<body bgcolor="#1e1f22">
+<table CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<tr><td><center>
+<font face="Arial, Helvetica" color="#000000">
+order_checker.dart</font>
+</center></td></tr></table>
+<pre><span class="s0">import </span><span class="s1">'dart:async'</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">'package:flutter/material.dart'</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">'package:flutter_local_notifications/flutter_local_notifications.dart'</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">'package:foodliger/database/db_controller.dart'</span><span class="s2">; </span><span class="s3">// Import your db_controller</span>
+
+<span class="s4">class </span><span class="s0">OrderChecker </span><span class="s2">{</span>
+  <span class="s0">Timer</span><span class="s2">? </span><span class="s0">_timer</span><span class="s2">;</span>
+  <span class="s4">final </span><span class="s0">FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin </span><span class="s2">= </span><span class="s0">FlutterLocalNotificationsPlugin</span><span class="s2">();</span>
+
+  <span class="s0">OrderChecker</span><span class="s2">() {</span>
+    <span class="s3">// Initialize the local notifications plugin</span>
+    <span class="s0">_initializeNotifications</span><span class="s2">();</span>
+  <span class="s2">}</span>
+
+  <span class="s0">Future</span><span class="s2">&lt;</span><span class="s4">void</span><span class="s2">&gt; </span><span class="s0">_initializeNotifications</span><span class="s2">() </span><span class="s0">async </span><span class="s2">{</span>
+    <span class="s4">const </span><span class="s0">AndroidInitializationSettings initializationSettingsAndroid </span><span class="s2">= </span><span class="s0">AndroidInitializationSettings</span><span class="s2">(</span><span class="s1">'@mipmap/ic_launcher'</span><span class="s2">);</span>
+    <span class="s4">const </span><span class="s0">InitializationSettings initializationSettings </span><span class="s2">= </span><span class="s0">InitializationSettings</span><span class="s2">(</span><span class="s0">android</span><span class="s2">: </span><span class="s0">initializationSettingsAndroid</span><span class="s2">);</span>
+
+    <span class="s0">await flutterLocalNotificationsPlugin</span><span class="s2">.</span><span class="s0">initialize</span><span class="s2">(</span><span class="s0">initializationSettings</span><span class="s2">);</span>
+  <span class="s2">}</span>
+
+  <span class="s4">void </span><span class="s0">startCheckingForOrders</span><span class="s2">(</span><span class="s0">int sellerId</span><span class="s2">) {</span>
+    <span class="s0">_timer </span><span class="s2">= </span><span class="s0">Timer</span><span class="s2">.</span><span class="s0">periodic</span><span class="s2">(</span><span class="s0">Duration</span><span class="s2">(</span><span class="s0">minutes</span><span class="s2">: </span><span class="s5">1</span><span class="s2">), (</span><span class="s0">timer</span><span class="s2">) </span><span class="s0">async </span><span class="s2">{</span>
+      <span class="s0">await _checkForNewOrders</span><span class="s2">(</span><span class="s0">sellerId</span><span class="s2">);</span>
+    <span class="s2">});</span>
+  <span class="s2">}</span>
+
+  <span class="s0">Future</span><span class="s2">&lt;</span><span class="s4">void</span><span class="s2">&gt; </span><span class="s0">_checkForNewOrders</span><span class="s2">(</span><span class="s0">int sellerId</span><span class="s2">) </span><span class="s0">async </span><span class="s2">{</span>
+    <span class="s4">try </span><span class="s2">{</span>
+      <span class="s3">// Fetch new orders for the given seller ID from the database</span>
+      <span class="s0">List</span><span class="s2">&lt;</span><span class="s0">Map</span><span class="s2">&lt;</span><span class="s0">String</span><span class="s2">, </span><span class="s0">dynamic</span><span class="s2">&gt;&gt; </span><span class="s0">orders </span><span class="s2">= </span><span class="s0">await fetchNewOrdersForSeller</span><span class="s2">(</span><span class="s0">sellerId</span><span class="s2">); </span><span class="s3">// Ensure you implement this method in db_controller</span>
+
+      <span class="s4">if </span><span class="s2">(</span><span class="s0">orders</span><span class="s2">.</span><span class="s0">isNotEmpty</span><span class="s2">) {</span>
+        <span class="s3">// Show in-app notification to the seller</span>
+        <span class="s0">_showNotification</span><span class="s2">(</span><span class="s0">orders</span><span class="s2">.</span><span class="s0">length</span><span class="s2">);</span>
+      <span class="s2">}</span>
+    <span class="s2">} </span><span class="s4">catch </span><span class="s2">(</span><span class="s0">e</span><span class="s2">) {</span>
+      <span class="s0">print</span><span class="s2">(</span><span class="s1">'Error fetching new orders: </span><span class="s2">$</span><span class="s0">e</span><span class="s1">'</span><span class="s2">);</span>
+    <span class="s2">}</span>
+  <span class="s2">}</span>
+
+  <span class="s0">Future</span><span class="s2">&lt;</span><span class="s4">void</span><span class="s2">&gt; </span><span class="s0">_showNotification</span><span class="s2">(</span><span class="s0">int orderCount</span><span class="s2">) </span><span class="s0">async </span><span class="s2">{</span>
+    <span class="s4">const </span><span class="s0">AndroidNotificationDetails androidPlatformChannelSpecifics </span><span class="s2">= </span><span class="s0">AndroidNotificationDetails</span><span class="s2">(</span>
+      <span class="s1">'order_channel'</span><span class="s2">,</span>
+      <span class="s1">'Orders'</span><span class="s2">,</span>
+      <span class="s0">channelDescription</span><span class="s2">: </span><span class="s1">'Channel for order notifications'</span><span class="s2">,</span>
+      <span class="s0">importance</span><span class="s2">: </span><span class="s0">Importance</span><span class="s2">.</span><span class="s0">high</span><span class="s2">,</span>
+      <span class="s0">priority</span><span class="s2">: </span><span class="s0">Priority</span><span class="s2">.</span><span class="s0">high</span><span class="s2">,</span>
+      <span class="s0">showWhen</span><span class="s2">: </span><span class="s4">false</span><span class="s2">,</span>
+    <span class="s2">);</span>
+
+    <span class="s4">const </span><span class="s0">NotificationDetails platformChannelSpecifics </span><span class="s2">= </span><span class="s0">NotificationDetails</span><span class="s2">(</span><span class="s0">android</span><span class="s2">: </span><span class="s0">androidPlatformChannelSpecifics</span><span class="s2">);</span>
+    <span class="s0">await flutterLocalNotificationsPlugin</span><span class="s2">.</span><span class="s0">show</span><span class="s2">(</span>
+      <span class="s5">0</span><span class="s2">,</span>
+      <span class="s1">'New Orders'</span><span class="s2">,</span>
+      <span class="s1">'You have </span><span class="s2">$</span><span class="s0">orderCount </span><span class="s1">new order(s).'</span><span class="s2">,</span>
+      <span class="s0">platformChannelSpecifics</span><span class="s2">,</span>
+      <span class="s0">payload</span><span class="s2">: </span><span class="s1">'order_payload'</span><span class="s2">,</span>
+    <span class="s2">);</span>
+  <span class="s2">}</span>
+
+  <span class="s4">void </span><span class="s0">stopChecking</span><span class="s2">() {</span>
+    <span class="s0">_timer</span><span class="s2">?.</span><span class="s0">cancel</span><span class="s2">();</span>
+  <span class="s2">}</span>
+<span class="s2">}</span>
+</pre>
+</body>
+</html>
