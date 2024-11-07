@@ -1,0 +1,363 @@
+<html>
+<head>
+<title>db_controller.dart</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.s0 { color: #bcbec4;}
+.s1 { color: #6aab73;}
+.s2 { color: #bcbec4;}
+.s3 { color: #7a7e85;}
+.s4 { color: #cf8e6d;}
+.s5 { color: #2aacb8;}
+</style>
+</head>
+<body bgcolor="#1e1f22">
+<table CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<tr><td><center>
+<font face="Arial, Helvetica" color="#000000">
+db_controller.dart</font>
+</center></td></tr></table>
+<pre><span class="s0">import </span><span class="s1">'package:mysql1/mysql1.dart'</span><span class="s2">;</span>
+
+<span class="s3">// Create a class to handle MySQL database connection and CRUD operations</span>
+
+  <span class="s3">// Connection settings for the MySQL database</span>
+  <span class="s4">final </span><span class="s0">ConnectionSettings settings </span><span class="s2">= </span><span class="s0">ConnectionSettings</span><span class="s2">(</span>
+    <span class="s0">host</span><span class="s2">: </span><span class="s1">'sql12.freesqldatabase.com'</span><span class="s2">,</span>
+    <span class="s0">port</span><span class="s2">: </span><span class="s5">3306</span><span class="s2">,</span>
+    <span class="s0">user</span><span class="s2">: </span><span class="s1">'sql12742621'</span><span class="s2">,</span>
+    <span class="s0">password</span><span class="s2">: </span><span class="s1">'PfxvG1ty1y'</span><span class="s2">,</span>
+    <span class="s0">db</span><span class="s2">: </span><span class="s1">'sql12742621'</span><span class="s2">,</span>
+  <span class="s2">);</span>
+
+  <span class="s3">// Method to connect to the database</span>
+  <span class="s0">Future</span><span class="s2">&lt;</span><span class="s0">MySqlConnection</span><span class="s2">&gt; </span><span class="s0">connect</span><span class="s2">() </span><span class="s0">async </span><span class="s2">{</span>
+    <span class="s4">return </span><span class="s0">await MySqlConnection</span><span class="s2">.</span><span class="s0">connect</span><span class="s2">(</span><span class="s0">settings</span><span class="s2">);</span>
+  <span class="s2">}</span>
+
+  <span class="s3">// Create operation (Insert data)</span>
+  <span class="s0">Future</span><span class="s2">&lt;</span><span class="s4">void</span><span class="s2">&gt; </span><span class="s0">createUser</span><span class="s2">(</span><span class="s0">String name</span><span class="s2">, </span><span class="s0">String email</span><span class="s2">, </span><span class="s0">String pass</span><span class="s2">) </span><span class="s0">async </span><span class="s2">{</span>
+    <span class="s4">final </span><span class="s0">conn </span><span class="s2">= </span><span class="s0">await connect</span><span class="s2">();</span>
+    <span class="s4">try </span><span class="s2">{</span>
+      <span class="s4">var </span><span class="s0">result </span><span class="s2">= </span><span class="s0">await conn</span><span class="s2">.</span><span class="s0">query</span><span class="s2">(</span>
+          <span class="s1">'INSERT INTO users (name, email, pass) VALUES (?, ?, ?)'</span><span class="s2">,</span>
+          <span class="s2">[</span><span class="s0">name</span><span class="s2">, </span><span class="s0">email</span><span class="s2">, </span><span class="s0">pass</span><span class="s2">]</span>
+      <span class="s2">);</span>
+      <span class="s0">print</span><span class="s2">(</span><span class="s1">'Inserted row id: </span><span class="s2">${</span><span class="s0">result</span><span class="s2">.</span><span class="s0">insertId</span><span class="s2">}</span><span class="s1">'</span><span class="s2">);</span>
+      <span class="s0">globalUserName </span><span class="s2">= </span><span class="s0">name</span><span class="s2">;</span>
+    <span class="s2">} </span><span class="s4">finally </span><span class="s2">{</span>
+      <span class="s0">await conn</span><span class="s2">.</span><span class="s0">close</span><span class="s2">();</span>
+    <span class="s2">}</span>
+  <span class="s2">}</span>
+
+  <span class="s3">// Read operation (Retrieve data)</span>
+  <span class="s0">Future</span><span class="s2">&lt;</span><span class="s4">void</span><span class="s2">&gt; </span><span class="s0">readData</span><span class="s2">() </span><span class="s0">async </span><span class="s2">{</span>
+    <span class="s4">final </span><span class="s0">conn </span><span class="s2">= </span><span class="s0">await connect</span><span class="s2">();</span>
+    <span class="s4">try </span><span class="s2">{</span>
+      <span class="s4">var </span><span class="s0">results </span><span class="s2">= </span><span class="s0">await conn</span><span class="s2">.</span><span class="s0">query</span><span class="s2">(</span><span class="s1">'SELECT id, name, age FROM users'</span><span class="s2">);</span>
+      <span class="s4">for </span><span class="s2">(</span><span class="s4">var </span><span class="s0">row </span><span class="s4">in </span><span class="s0">results</span><span class="s2">) {</span>
+        <span class="s0">print</span><span class="s2">(</span><span class="s1">'User: id=</span><span class="s2">${</span><span class="s0">row</span><span class="s2">[</span><span class="s5">0</span><span class="s2">]}</span><span class="s1">, name=</span><span class="s2">${</span><span class="s0">row</span><span class="s2">[</span><span class="s5">1</span><span class="s2">]}</span><span class="s1">, age=</span><span class="s2">${</span><span class="s0">row</span><span class="s2">[</span><span class="s5">2</span><span class="s2">]}</span><span class="s1">'</span><span class="s2">);</span>
+      <span class="s2">}</span>
+    <span class="s2">} </span><span class="s4">finally </span><span class="s2">{</span>
+      <span class="s0">await conn</span><span class="s2">.</span><span class="s0">close</span><span class="s2">();</span>
+    <span class="s2">}</span>
+  <span class="s2">}</span>
+
+  <span class="s3">// Update operation (Update data)</span>
+  <span class="s0">Future</span><span class="s2">&lt;</span><span class="s4">void</span><span class="s2">&gt; </span><span class="s0">updateData</span><span class="s2">(</span><span class="s0">int id</span><span class="s2">, </span><span class="s0">String name</span><span class="s2">, </span><span class="s0">int age</span><span class="s2">) </span><span class="s0">async </span><span class="s2">{</span>
+    <span class="s4">final </span><span class="s0">conn </span><span class="s2">= </span><span class="s0">await connect</span><span class="s2">();</span>
+    <span class="s4">try </span><span class="s2">{</span>
+      <span class="s4">var </span><span class="s0">result </span><span class="s2">= </span><span class="s0">await conn</span><span class="s2">.</span><span class="s0">query</span><span class="s2">(</span>
+          <span class="s1">'UPDATE users SET name = ?, age = ? WHERE id = ?'</span><span class="s2">,</span>
+          <span class="s2">[</span><span class="s0">name</span><span class="s2">, </span><span class="s0">age</span><span class="s2">, </span><span class="s0">id</span><span class="s2">]</span>
+      <span class="s2">);</span>
+      <span class="s0">print</span><span class="s2">(</span><span class="s1">'Updated </span><span class="s2">${</span><span class="s0">result</span><span class="s2">.</span><span class="s0">affectedRows</span><span class="s2">} </span><span class="s1">row(s)'</span><span class="s2">);</span>
+    <span class="s2">} </span><span class="s4">finally </span><span class="s2">{</span>
+      <span class="s0">await conn</span><span class="s2">.</span><span class="s0">close</span><span class="s2">();</span>
+    <span class="s2">}</span>
+  <span class="s2">}</span>
+
+  <span class="s3">// Delete operation (Delete data)</span>
+  <span class="s0">Future</span><span class="s2">&lt;</span><span class="s4">void</span><span class="s2">&gt; </span><span class="s0">deleteData</span><span class="s2">(</span><span class="s0">int id</span><span class="s2">) </span><span class="s0">async </span><span class="s2">{</span>
+    <span class="s4">final </span><span class="s0">conn </span><span class="s2">= </span><span class="s0">await connect</span><span class="s2">();</span>
+    <span class="s4">try </span><span class="s2">{</span>
+      <span class="s4">var </span><span class="s0">result </span><span class="s2">= </span><span class="s0">await conn</span><span class="s2">.</span><span class="s0">query</span><span class="s2">(</span>
+          <span class="s1">'DELETE FROM users WHERE id = ?'</span><span class="s2">,</span>
+          <span class="s2">[</span><span class="s0">id</span><span class="s2">]</span>
+      <span class="s2">);</span>
+      <span class="s0">print</span><span class="s2">(</span><span class="s1">'Deleted </span><span class="s2">${</span><span class="s0">result</span><span class="s2">.</span><span class="s0">affectedRows</span><span class="s2">} </span><span class="s1">row(s)'</span><span class="s2">);</span>
+    <span class="s2">} </span><span class="s4">finally </span><span class="s2">{</span>
+      <span class="s0">await conn</span><span class="s2">.</span><span class="s0">close</span><span class="s2">();</span>
+    <span class="s2">}</span>
+  <span class="s2">}</span>
+
+<span class="s3">// Declare a global variable for storing the user's name</span>
+<span class="s0">String</span><span class="s2">? </span><span class="s0">globalUserName</span><span class="s2">;</span>
+
+<span class="s3">// Method to authenticate user credentials</span>
+<span class="s0">Future</span><span class="s2">&lt;</span><span class="s0">bool</span><span class="s2">&gt; </span><span class="s0">authenticate</span><span class="s2">(</span><span class="s0">String email</span><span class="s2">, </span><span class="s0">String pass</span><span class="s2">) </span><span class="s0">async </span><span class="s2">{</span>
+  <span class="s4">final </span><span class="s0">conn </span><span class="s2">= </span><span class="s0">await MySqlConnection</span><span class="s2">.</span><span class="s0">connect</span><span class="s2">(</span><span class="s0">settings</span><span class="s2">);</span>
+  <span class="s4">try </span><span class="s2">{</span>
+    <span class="s3">// Query to check if the user exists with the provided email and password</span>
+    <span class="s4">var </span><span class="s0">result </span><span class="s2">= </span><span class="s0">await conn</span><span class="s2">.</span><span class="s0">query</span><span class="s2">(</span>
+        <span class="s1">'SELECT name FROM users WHERE email = ? AND pass = ?'</span><span class="s2">,</span>
+        <span class="s2">[</span><span class="s0">email</span><span class="s2">, </span><span class="s0">pass</span><span class="s2">]</span>
+    <span class="s2">);</span>
+
+    <span class="s3">// If result has any rows, the credentials are valid</span>
+    <span class="s4">if </span><span class="s2">(</span><span class="s0">result</span><span class="s2">.</span><span class="s0">isNotEmpty</span><span class="s2">) {</span>
+      <span class="s3">// Extract the user's name and convert it to a String</span>
+      <span class="s0">globalUserName </span><span class="s2">= </span><span class="s0">result</span><span class="s2">.</span><span class="s0">first</span><span class="s2">[</span><span class="s1">'name'</span><span class="s2">].</span><span class="s0">toString</span><span class="s2">(); </span><span class="s3">// Ensure it's a string</span>
+      <span class="s4">return true</span><span class="s2">;</span>
+    <span class="s2">} </span><span class="s4">else </span><span class="s2">{</span>
+      <span class="s4">return false</span><span class="s2">;</span>
+    <span class="s2">}</span>
+  <span class="s2">} </span><span class="s4">catch </span><span class="s2">(</span><span class="s0">e</span><span class="s2">) {</span>
+    <span class="s0">print</span><span class="s2">(</span><span class="s1">'Error during authentication: </span><span class="s2">$</span><span class="s0">e</span><span class="s1">'</span><span class="s2">);</span>
+    <span class="s4">return false</span><span class="s2">; </span><span class="s3">// Return false in case of error</span>
+  <span class="s2">} </span><span class="s4">finally </span><span class="s2">{</span>
+    <span class="s0">await conn</span><span class="s2">.</span><span class="s0">close</span><span class="s2">(); </span><span class="s3">// Ensure the connection is closed</span>
+  <span class="s2">}</span>
+<span class="s2">}</span>
+
+
+<span class="s3">// Define global variables for seller ID and shop ID</span>
+<span class="s0">int</span><span class="s2">? </span><span class="s0">globalSellerId</span><span class="s2">;</span>
+<span class="s0">int</span><span class="s2">? </span><span class="s0">globalShopId</span><span class="s2">;</span>
+
+<span class="s0">Future</span><span class="s2">&lt;</span><span class="s0">bool</span><span class="s2">&gt; </span><span class="s0">authenticate_seller</span><span class="s2">(</span><span class="s0">String email</span><span class="s2">, </span><span class="s0">String pass</span><span class="s2">) </span><span class="s0">async </span><span class="s2">{</span>
+  <span class="s4">final </span><span class="s0">conn </span><span class="s2">= </span><span class="s0">await MySqlConnection</span><span class="s2">.</span><span class="s0">connect</span><span class="s2">(</span><span class="s0">settings</span><span class="s2">);</span>
+  <span class="s4">try </span><span class="s2">{</span>
+    <span class="s3">// Query to check if the user exists with the provided email and password</span>
+    <span class="s4">var </span><span class="s0">result </span><span class="s2">= </span><span class="s0">await conn</span><span class="s2">.</span><span class="s0">query</span><span class="s2">(</span>
+        <span class="s1">'SELECT seller_id, shop_id FROM sellers WHERE email = ? AND pass = ?'</span><span class="s2">,</span>
+        <span class="s2">[</span><span class="s0">email</span><span class="s2">, </span><span class="s0">pass</span><span class="s2">]</span>
+    <span class="s2">);</span>
+
+    <span class="s3">// If result has any rows, the credentials are valid</span>
+    <span class="s4">if </span><span class="s2">(</span><span class="s0">result</span><span class="s2">.</span><span class="s0">isNotEmpty</span><span class="s2">) {</span>
+      <span class="s3">// Store seller_id and shop_id in global variables</span>
+      <span class="s0">globalSellerId </span><span class="s2">= </span><span class="s0">result</span><span class="s2">.</span><span class="s0">first</span><span class="s2">[</span><span class="s5">0</span><span class="s2">];</span>
+      <span class="s0">globalShopId </span><span class="s2">= </span><span class="s0">result</span><span class="s2">.</span><span class="s0">first</span><span class="s2">[</span><span class="s5">1</span><span class="s2">];</span>
+      <span class="s4">return true</span><span class="s2">;</span>
+    <span class="s2">} </span><span class="s4">else </span><span class="s2">{</span>
+      <span class="s4">return false</span><span class="s2">;</span>
+    <span class="s2">}</span>
+  <span class="s2">} </span><span class="s4">catch </span><span class="s2">(</span><span class="s0">e</span><span class="s2">) {</span>
+    <span class="s0">print</span><span class="s2">(</span><span class="s1">'Error during authentication: </span><span class="s2">$</span><span class="s0">e</span><span class="s1">'</span><span class="s2">);</span>
+    <span class="s4">return false</span><span class="s2">; </span><span class="s3">// Return false in case of error</span>
+  <span class="s2">} </span><span class="s4">finally </span><span class="s2">{</span>
+    <span class="s0">await conn</span><span class="s2">.</span><span class="s0">close</span><span class="s2">(); </span><span class="s3">// Ensure the connection is closed</span>
+  <span class="s2">}</span>
+<span class="s2">}</span>
+
+
+
+<span class="s0">Future</span><span class="s2">&lt;</span><span class="s0">List</span><span class="s2">&lt;</span><span class="s0">Map</span><span class="s2">&lt;</span><span class="s0">String</span><span class="s2">, </span><span class="s0">dynamic</span><span class="s2">&gt;&gt;&gt; </span><span class="s0">fetchMenuItems</span><span class="s2">(</span><span class="s0">int shopId</span><span class="s2">) </span><span class="s0">async </span><span class="s2">{</span>
+  <span class="s0">List</span><span class="s2">&lt;</span><span class="s0">Map</span><span class="s2">&lt;</span><span class="s0">String</span><span class="s2">, </span><span class="s0">dynamic</span><span class="s2">&gt;&gt; </span><span class="s0">menuItems </span><span class="s2">= [];</span>
+  <span class="s4">var </span><span class="s0">conn </span><span class="s2">= </span><span class="s0">await MySqlConnection</span><span class="s2">.</span><span class="s0">connect</span><span class="s2">(</span><span class="s0">settings</span><span class="s2">);</span>
+
+  <span class="s4">try </span><span class="s2">{</span>
+    <span class="s4">var </span><span class="s0">results </span><span class="s2">= </span><span class="s0">await conn</span><span class="s2">.</span><span class="s0">query</span><span class="s2">(</span>
+      <span class="s1">'SELECT menu_name, price FROM menu WHERE shop_id = ?'</span><span class="s2">,</span>
+      <span class="s2">[</span><span class="s0">shopId</span><span class="s2">],</span>
+    <span class="s2">);</span>
+
+    <span class="s4">for </span><span class="s2">(</span><span class="s4">var </span><span class="s0">row </span><span class="s4">in </span><span class="s0">results</span><span class="s2">) {</span>
+      <span class="s3">// Ensure that the menu_name is converted to a String if it comes as a BLOB</span>
+      <span class="s0">String menuName </span><span class="s2">= (</span><span class="s0">row</span><span class="s2">[</span><span class="s5">0</span><span class="s2">] </span><span class="s4">is </span><span class="s0">List</span><span class="s2">&lt;</span><span class="s0">int</span><span class="s2">&gt;)</span>
+          <span class="s2">? </span><span class="s0">String</span><span class="s2">.</span><span class="s0">fromCharCodes</span><span class="s2">(</span><span class="s0">row</span><span class="s2">[</span><span class="s5">0</span><span class="s2">]) </span><span class="s3">// Convert BLOB to String</span>
+          <span class="s2">: </span><span class="s0">row</span><span class="s2">[</span><span class="s5">0</span><span class="s2">].</span><span class="s0">toString</span><span class="s2">(); </span><span class="s3">// Ensure it is a String</span>
+
+      <span class="s3">// Check if the price is of a valid type (int or double)</span>
+      <span class="s0">double price </span><span class="s2">= </span><span class="s0">row</span><span class="s2">[</span><span class="s5">1</span><span class="s2">] </span><span class="s4">is </span><span class="s0">double </span><span class="s2">? </span><span class="s0">row</span><span class="s2">[</span><span class="s5">1</span><span class="s2">] : </span><span class="s0">double</span><span class="s2">.</span><span class="s0">tryParse</span><span class="s2">(</span><span class="s0">row</span><span class="s2">[</span><span class="s5">1</span><span class="s2">].</span><span class="s0">toString</span><span class="s2">()) ?? </span><span class="s5">0.0</span><span class="s2">;</span>
+
+      <span class="s0">menuItems</span><span class="s2">.</span><span class="s0">add</span><span class="s2">({</span>
+        <span class="s1">'menu_name'</span><span class="s2">: </span><span class="s0">menuName</span><span class="s2">,</span>
+        <span class="s1">'price'</span><span class="s2">: </span><span class="s0">price</span><span class="s2">,</span>
+      <span class="s2">});</span>
+    <span class="s2">}</span>
+  <span class="s2">} </span><span class="s4">catch </span><span class="s2">(</span><span class="s0">e</span><span class="s2">) {</span>
+    <span class="s0">print</span><span class="s2">(</span><span class="s1">'Error fetching menu items: </span><span class="s2">$</span><span class="s0">e</span><span class="s1">'</span><span class="s2">);</span>
+  <span class="s2">} </span><span class="s4">finally </span><span class="s2">{</span>
+    <span class="s0">await conn</span><span class="s2">.</span><span class="s0">close</span><span class="s2">();</span>
+  <span class="s2">}</span>
+  <span class="s4">return </span><span class="s0">menuItems</span><span class="s2">;</span>
+<span class="s2">}</span>
+
+<span class="s3">// Function to insert order records into the database</span>
+<span class="s0">Future</span><span class="s2">&lt;</span><span class="s4">void</span><span class="s2">&gt; </span><span class="s0">insertOrderRecords</span><span class="s2">(</span><span class="s0">String username</span><span class="s2">, </span><span class="s0">List</span><span class="s2">&lt;</span><span class="s0">Map</span><span class="s2">&lt;</span><span class="s0">String</span><span class="s2">, </span><span class="s0">dynamic</span><span class="s2">&gt;&gt; </span><span class="s0">cartItems</span><span class="s2">, </span><span class="s0">String totalPrice</span><span class="s2">, </span><span class="s0">String fee</span><span class="s2">) </span><span class="s0">async </span><span class="s2">{</span>
+  <span class="s3">// Establish the connection</span>
+  <span class="s4">final </span><span class="s0">conn </span><span class="s2">= </span><span class="s0">await MySqlConnection</span><span class="s2">.</span><span class="s0">connect</span><span class="s2">(</span><span class="s0">settings</span><span class="s2">);</span>
+
+  <span class="s4">try </span><span class="s2">{</span>
+    <span class="s4">for </span><span class="s2">(</span><span class="s4">var </span><span class="s0">item </span><span class="s4">in </span><span class="s0">cartItems</span><span class="s2">) {</span>
+      <span class="s3">// Define the SQL query to insert an order record</span>
+      <span class="s4">final </span><span class="s0">String query </span><span class="s2">= </span><span class="s1">'''</span>
+        <span class="s1">INSERT INTO orders (name, menu_name, quantity, shop_id, total_price, fee) 
+        VALUES (?, ?, ?, ?, ?, ?) 
+      '''</span><span class="s2">;</span>
+
+      <span class="s3">// Execute the query with values for each item in the cart</span>
+      <span class="s0">await conn</span><span class="s2">.</span><span class="s0">query</span><span class="s2">(</span>
+        <span class="s0">query</span><span class="s2">,</span>
+        <span class="s2">[</span><span class="s0">username</span><span class="s2">, </span><span class="s0">item</span><span class="s2">[</span><span class="s1">'menu_name'</span><span class="s2">], </span><span class="s0">item</span><span class="s2">[</span><span class="s1">'quantity'</span><span class="s2">], </span><span class="s0">item</span><span class="s2">[</span><span class="s1">'shop_id'</span><span class="s2">], </span><span class="s0">totalPrice</span><span class="s2">, </span><span class="s0">fee</span><span class="s2">], </span><span class="s3">// Get shop_id from the cart item</span>
+      <span class="s2">);</span>
+    <span class="s2">}</span>
+    <span class="s0">print</span><span class="s2">(</span><span class="s1">'Order records inserted successfully.'</span><span class="s2">);</span>
+  <span class="s2">} </span><span class="s4">catch </span><span class="s2">(</span><span class="s0">e</span><span class="s2">) {</span>
+    <span class="s0">print</span><span class="s2">(</span><span class="s1">'Error inserting order records: </span><span class="s2">$</span><span class="s0">e</span><span class="s1">'</span><span class="s2">);</span>
+  <span class="s2">} </span><span class="s4">finally </span><span class="s2">{</span>
+    <span class="s0">await conn</span><span class="s2">.</span><span class="s0">close</span><span class="s2">(); </span><span class="s3">// Close the connection</span>
+  <span class="s2">}</span>
+<span class="s2">}</span>
+
+<span class="s0">Future</span><span class="s2">&lt;</span><span class="s4">void</span><span class="s2">&gt; </span><span class="s0">dbAddMenuItem</span><span class="s2">(</span><span class="s0">String menuName</span><span class="s2">, </span><span class="s0">double price</span><span class="s2">, </span><span class="s0">int shopId</span><span class="s2">, </span><span class="s0">int sellerId</span><span class="s2">) </span><span class="s0">async </span><span class="s2">{</span>
+  <span class="s4">final </span><span class="s0">conn </span><span class="s2">= </span><span class="s0">await MySqlConnection</span><span class="s2">.</span><span class="s0">connect</span><span class="s2">(</span><span class="s0">settings</span><span class="s2">);</span>
+  <span class="s4">try </span><span class="s2">{</span>
+    <span class="s3">// First, fetch the shop_name based on shop_id from the sellers table</span>
+    <span class="s4">var </span><span class="s0">result </span><span class="s2">= </span><span class="s0">await conn</span><span class="s2">.</span><span class="s0">query</span><span class="s2">(</span>
+      <span class="s1">'SELECT shop_name FROM sellers WHERE shop_id = ?'</span><span class="s2">,</span>
+      <span class="s2">[</span><span class="s0">shopId</span><span class="s2">],</span>
+    <span class="s2">);</span>
+
+    <span class="s3">// Check if shop_name is found</span>
+    <span class="s4">if </span><span class="s2">(</span><span class="s0">result</span><span class="s2">.</span><span class="s0">isNotEmpty</span><span class="s2">) {</span>
+      <span class="s0">String shopName </span><span class="s2">= </span><span class="s0">result</span><span class="s2">.</span><span class="s0">first</span><span class="s2">[</span><span class="s5">0</span><span class="s2">].</span><span class="s0">toString</span><span class="s2">();</span>
+
+      <span class="s3">// Insert new menu item into menu table with the fetched shop_name</span>
+      <span class="s0">await conn</span><span class="s2">.</span><span class="s0">query</span><span class="s2">(</span>
+        <span class="s1">'INSERT INTO menu (menu_name, price, shop_id, seller_id, shop_name) VALUES (?, ?, ?, ?, ?)'</span><span class="s2">,</span>
+        <span class="s2">[</span><span class="s0">menuName</span><span class="s2">, </span><span class="s0">price</span><span class="s2">, </span><span class="s0">shopId</span><span class="s2">, </span><span class="s0">sellerId</span><span class="s2">, </span><span class="s0">shopName</span><span class="s2">],</span>
+      <span class="s2">);</span>
+
+      <span class="s0">print</span><span class="s2">(</span><span class="s1">'Menu item added: </span><span class="s2">$</span><span class="s0">menuName</span><span class="s1">, Price: </span><span class="s2">$</span><span class="s0">price</span><span class="s1">, Shop Name: </span><span class="s2">$</span><span class="s0">shopName</span><span class="s1">'</span><span class="s2">);</span>
+    <span class="s2">} </span><span class="s4">else </span><span class="s2">{</span>
+      <span class="s0">print</span><span class="s2">(</span><span class="s1">'No shop name found for the provided shop_id.'</span><span class="s2">);</span>
+    <span class="s2">}</span>
+  <span class="s2">} </span><span class="s4">catch </span><span class="s2">(</span><span class="s0">e</span><span class="s2">) {</span>
+    <span class="s0">print</span><span class="s2">(</span><span class="s1">'Error adding menu item: </span><span class="s2">$</span><span class="s0">e</span><span class="s1">'</span><span class="s2">);</span>
+  <span class="s2">} </span><span class="s4">finally </span><span class="s2">{</span>
+    <span class="s0">await conn</span><span class="s2">.</span><span class="s0">close</span><span class="s2">();</span>
+  <span class="s2">}</span>
+<span class="s2">}</span>
+
+
+<span class="s0">Future</span><span class="s2">&lt;</span><span class="s4">void</span><span class="s2">&gt; </span><span class="s0">dbDeleteMenuItem</span><span class="s2">(</span><span class="s0">String menuName</span><span class="s2">, </span><span class="s0">int shopId</span><span class="s2">) </span><span class="s0">async </span><span class="s2">{</span>
+  <span class="s4">final </span><span class="s0">conn </span><span class="s2">= </span><span class="s0">await MySqlConnection</span><span class="s2">.</span><span class="s0">connect</span><span class="s2">(</span><span class="s0">settings</span><span class="s2">);</span>
+  <span class="s4">try </span><span class="s2">{</span>
+    <span class="s0">await conn</span><span class="s2">.</span><span class="s0">query</span><span class="s2">(</span>
+      <span class="s1">'DELETE FROM menu WHERE menu_name = ? AND shop_id = ?'</span><span class="s2">,</span>
+      <span class="s2">[</span><span class="s0">menuName</span><span class="s2">, </span><span class="s0">shopId</span><span class="s2">],</span>
+    <span class="s2">);</span>
+  <span class="s2">} </span><span class="s4">finally </span><span class="s2">{</span>
+    <span class="s0">await conn</span><span class="s2">.</span><span class="s0">close</span><span class="s2">();</span>
+  <span class="s2">}</span>
+<span class="s2">}</span>
+
+<span class="s3">// Function to fetch shop info (shop_name and payment_address)</span>
+<span class="s0">Future</span><span class="s2">&lt;</span><span class="s0">Map</span><span class="s2">&lt;</span><span class="s0">String</span><span class="s2">, </span><span class="s0">dynamic</span><span class="s2">&gt;?&gt; </span><span class="s0">dbFetchShopInfo</span><span class="s2">(</span><span class="s0">int shopId</span><span class="s2">) </span><span class="s0">async </span><span class="s2">{</span>
+  <span class="s4">final </span><span class="s0">conn </span><span class="s2">= </span><span class="s0">await MySqlConnection</span><span class="s2">.</span><span class="s0">connect</span><span class="s2">(</span><span class="s0">settings</span><span class="s2">);</span>
+  <span class="s4">try </span><span class="s2">{</span>
+    <span class="s4">var </span><span class="s0">results </span><span class="s2">= </span><span class="s0">await conn</span><span class="s2">.</span><span class="s0">query</span><span class="s2">(</span>
+        <span class="s1">'SELECT shop_name, payment_address FROM sellers WHERE shop_id = ?'</span><span class="s2">, [</span><span class="s0">shopId</span><span class="s2">]</span>
+    <span class="s2">);</span>
+
+    <span class="s4">if </span><span class="s2">(</span><span class="s0">results</span><span class="s2">.</span><span class="s0">isNotEmpty</span><span class="s2">) {</span>
+      <span class="s4">var </span><span class="s0">row </span><span class="s2">= </span><span class="s0">results</span><span class="s2">.</span><span class="s0">first</span><span class="s2">;</span>
+      <span class="s4">return </span><span class="s2">{</span>
+        <span class="s1">'shop_name'</span><span class="s2">: </span><span class="s0">row</span><span class="s2">[</span><span class="s5">0</span><span class="s2">] </span><span class="s4">is </span><span class="s0">Blob </span><span class="s2">? </span><span class="s0">String</span><span class="s2">.</span><span class="s0">fromCharCodes</span><span class="s2">(</span><span class="s0">row</span><span class="s2">[</span><span class="s5">0</span><span class="s2">].</span><span class="s0">toBytes</span><span class="s2">()) : </span><span class="s0">row</span><span class="s2">[</span><span class="s5">0</span><span class="s2">], </span><span class="s3">// Convert Blob to String if needed</span>
+        <span class="s1">'payment_address'</span><span class="s2">: </span><span class="s0">row</span><span class="s2">[</span><span class="s5">1</span><span class="s2">] </span><span class="s4">is </span><span class="s0">Blob </span><span class="s2">? </span><span class="s0">String</span><span class="s2">.</span><span class="s0">fromCharCodes</span><span class="s2">(</span><span class="s0">row</span><span class="s2">[</span><span class="s5">1</span><span class="s2">].</span><span class="s0">toBytes</span><span class="s2">()) : </span><span class="s0">row</span><span class="s2">[</span><span class="s5">1</span><span class="s2">], </span><span class="s3">// Convert Blob to String if needed</span>
+      <span class="s2">};</span>
+    <span class="s2">}</span>
+  <span class="s2">} </span><span class="s4">catch </span><span class="s2">(</span><span class="s0">e</span><span class="s2">) {</span>
+    <span class="s0">print</span><span class="s2">(</span><span class="s1">'Error fetching shop info: </span><span class="s2">$</span><span class="s0">e</span><span class="s1">'</span><span class="s2">);</span>
+  <span class="s2">} </span><span class="s4">finally </span><span class="s2">{</span>
+    <span class="s0">await conn</span><span class="s2">.</span><span class="s0">close</span><span class="s2">();</span>
+  <span class="s2">}</span>
+  <span class="s4">return null</span><span class="s2">;</span>
+<span class="s2">}</span>
+
+
+<span class="s3">// Function to update payment address</span>
+<span class="s0">Future</span><span class="s2">&lt;</span><span class="s4">void</span><span class="s2">&gt; </span><span class="s0">dbUpdatePaymentAddress</span><span class="s2">(</span><span class="s0">int shopId</span><span class="s2">, </span><span class="s0">String paymentAddress</span><span class="s2">) </span><span class="s0">async </span><span class="s2">{</span>
+  <span class="s4">final </span><span class="s0">conn </span><span class="s2">= </span><span class="s0">await MySqlConnection</span><span class="s2">.</span><span class="s0">connect</span><span class="s2">(</span><span class="s0">settings</span><span class="s2">);</span>
+  <span class="s4">try </span><span class="s2">{</span>
+    <span class="s0">await conn</span><span class="s2">.</span><span class="s0">query</span><span class="s2">(</span>
+      <span class="s1">'UPDATE sellers SET payment_address = ? WHERE shop_id = ?'</span><span class="s2">,</span>
+      <span class="s2">[</span><span class="s0">paymentAddress</span><span class="s2">, </span><span class="s0">shopId</span><span class="s2">],</span>
+    <span class="s2">);</span>
+  <span class="s2">} </span><span class="s4">finally </span><span class="s2">{</span>
+    <span class="s0">await conn</span><span class="s2">.</span><span class="s0">close</span><span class="s2">();</span>
+  <span class="s2">}</span>
+<span class="s2">}</span>
+
+<span class="s3">// Fetch orders for a specific shop</span>
+<span class="s0">Future</span><span class="s2">&lt;</span><span class="s0">List</span><span class="s2">&lt;</span><span class="s0">Map</span><span class="s2">&lt;</span><span class="s0">String</span><span class="s2">, </span><span class="s0">dynamic</span><span class="s2">&gt;&gt;&gt; </span><span class="s0">fetchOrdersForShop</span><span class="s2">(</span><span class="s0">int shopId</span><span class="s2">) </span><span class="s0">async </span><span class="s2">{</span>
+  <span class="s4">final </span><span class="s0">conn </span><span class="s2">= </span><span class="s0">await MySqlConnection</span><span class="s2">.</span><span class="s0">connect</span><span class="s2">(</span><span class="s0">settings</span><span class="s2">);</span>
+  <span class="s4">try </span><span class="s2">{</span>
+    <span class="s4">var </span><span class="s0">results </span><span class="s2">= </span><span class="s0">await conn</span><span class="s2">.</span><span class="s0">query</span><span class="s2">(</span>
+        <span class="s1">'SELECT name, menu_name, quantity '</span>
+            <span class="s1">'FROM orders '</span>
+            <span class="s1">'WHERE shop_id = ?'</span><span class="s2">,</span>
+        <span class="s2">[</span><span class="s0">shopId</span><span class="s2">]</span>
+    <span class="s2">);</span>
+
+    <span class="s3">// Transform the results into a list of maps</span>
+    <span class="s4">return </span><span class="s0">results</span><span class="s2">.</span><span class="s0">map</span><span class="s2">((</span><span class="s0">row</span><span class="s2">) {</span>
+      <span class="s4">return </span><span class="s2">{</span>
+        <span class="s1">'name'</span><span class="s2">: </span><span class="s0">row</span><span class="s2">[</span><span class="s5">0</span><span class="s2">],</span>
+        <span class="s1">'menu_name'</span><span class="s2">: </span><span class="s0">row</span><span class="s2">[</span><span class="s5">1</span><span class="s2">],</span>
+        <span class="s1">'quantity'</span><span class="s2">: </span><span class="s0">row</span><span class="s2">[</span><span class="s5">2</span><span class="s2">],</span>
+      <span class="s2">};</span>
+    <span class="s2">}).</span><span class="s0">toList</span><span class="s2">();</span>
+  <span class="s2">} </span><span class="s4">catch </span><span class="s2">(</span><span class="s0">e</span><span class="s2">) {</span>
+    <span class="s0">print</span><span class="s2">(</span><span class="s1">'Error fetching orders: </span><span class="s2">$</span><span class="s0">e</span><span class="s1">'</span><span class="s2">);</span>
+    <span class="s4">return </span><span class="s2">[];</span>
+  <span class="s2">} </span><span class="s4">finally </span><span class="s2">{</span>
+    <span class="s0">await conn</span><span class="s2">.</span><span class="s0">close</span><span class="s2">(); </span><span class="s3">// Ensure the connection is closed</span>
+  <span class="s2">}</span>
+<span class="s2">}</span>
+
+<span class="s3">// Clear all orders for a specific shop</span>
+<span class="s0">Future</span><span class="s2">&lt;</span><span class="s4">void</span><span class="s2">&gt; </span><span class="s0">dbClearOrders</span><span class="s2">(</span><span class="s0">int shopId</span><span class="s2">) </span><span class="s0">async </span><span class="s2">{</span>
+  <span class="s4">final </span><span class="s0">conn </span><span class="s2">= </span><span class="s0">await MySqlConnection</span><span class="s2">.</span><span class="s0">connect</span><span class="s2">(</span><span class="s0">settings</span><span class="s2">);</span>
+  <span class="s4">try </span><span class="s2">{</span>
+    <span class="s0">await conn</span><span class="s2">.</span><span class="s0">query</span><span class="s2">(</span>
+        <span class="s1">'DELETE FROM orders WHERE shop_id = ?'</span><span class="s2">,</span>
+        <span class="s2">[</span><span class="s0">shopId</span><span class="s2">]</span>
+    <span class="s2">);</span>
+  <span class="s2">} </span><span class="s4">catch </span><span class="s2">(</span><span class="s0">e</span><span class="s2">) {</span>
+    <span class="s0">print</span><span class="s2">(</span><span class="s1">'Error clearing orders: </span><span class="s2">$</span><span class="s0">e</span><span class="s1">'</span><span class="s2">);</span>
+  <span class="s2">} </span><span class="s4">finally </span><span class="s2">{</span>
+    <span class="s0">await conn</span><span class="s2">.</span><span class="s0">close</span><span class="s2">(); </span><span class="s3">// Ensure the connection is closed</span>
+  <span class="s2">}</span>
+<span class="s2">}</span>
+
+<span class="s3">// Method to fetch new orders for the seller</span>
+<span class="s0">Future</span><span class="s2">&lt;</span><span class="s0">List</span><span class="s2">&lt;</span><span class="s0">Map</span><span class="s2">&lt;</span><span class="s0">String</span><span class="s2">, </span><span class="s0">dynamic</span><span class="s2">&gt;&gt;&gt; </span><span class="s0">fetchNewOrdersForSeller</span><span class="s2">(</span><span class="s0">int sellerId</span><span class="s2">) </span><span class="s0">async </span><span class="s2">{</span>
+  <span class="s4">final </span><span class="s0">conn </span><span class="s2">= </span><span class="s0">await MySqlConnection</span><span class="s2">.</span><span class="s0">connect</span><span class="s2">(</span><span class="s0">settings</span><span class="s2">);</span>
+  <span class="s4">try </span><span class="s2">{</span>
+    <span class="s4">var </span><span class="s0">results </span><span class="s2">= </span><span class="s0">await conn</span><span class="s2">.</span><span class="s0">query</span><span class="s2">(</span>
+      <span class="s1">'SELECT * FROM orders WHERE shop_id = ?'</span><span class="s2">, </span><span class="s3">// Select all orders for the given shop</span>
+      <span class="s2">[</span><span class="s0">sellerId</span><span class="s2">],</span>
+    <span class="s2">);</span>
+
+    <span class="s3">// Convert results to a list of maps, ensuring we only return relevant information</span>
+    <span class="s4">return </span><span class="s0">results</span><span class="s2">.</span><span class="s0">map</span><span class="s2">((</span><span class="s0">row</span><span class="s2">) =&gt; {</span>
+      <span class="s1">'name'</span><span class="s2">: </span><span class="s0">row</span><span class="s2">[</span><span class="s1">'name'</span><span class="s2">], </span><span class="s3">// User who placed the order</span>
+      <span class="s1">'menu_name'</span><span class="s2">: </span><span class="s0">row</span><span class="s2">[</span><span class="s1">'menu_name'</span><span class="s2">], </span><span class="s3">// Menu item ordered</span>
+      <span class="s1">'quantity'</span><span class="s2">: </span><span class="s0">row</span><span class="s2">[</span><span class="s1">'quantity'</span><span class="s2">], </span><span class="s3">// Quantity ordered</span>
+      <span class="s3">// We can choose to include total_price if needed, or remove it if not required</span>
+      <span class="s3">// 'total_price': row['total_price'], // Uncomment if you want to include total price</span>
+    <span class="s2">}).</span><span class="s0">toList</span><span class="s2">();</span>
+  <span class="s2">} </span><span class="s4">catch </span><span class="s2">(</span><span class="s0">e</span><span class="s2">) {</span>
+    <span class="s0">print</span><span class="s2">(</span><span class="s1">'Error fetching new orders: </span><span class="s2">$</span><span class="s0">e</span><span class="s1">'</span><span class="s2">);</span>
+    <span class="s4">return </span><span class="s2">[]; </span><span class="s3">// Return an empty list in case of error</span>
+  <span class="s2">} </span><span class="s4">finally </span><span class="s2">{</span>
+    <span class="s0">await conn</span><span class="s2">.</span><span class="s0">close</span><span class="s2">(); </span><span class="s3">// Ensure the connection is closed</span>
+  <span class="s2">}</span>
+<span class="s2">}</span>
+</pre>
+</body>
+</html>

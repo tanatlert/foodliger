@@ -1,0 +1,92 @@
+<html>
+<head>
+<title>seller_page.dart</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.s0 { color: #bcbec4;}
+.s1 { color: #6aab73;}
+.s2 { color: #bcbec4;}
+.s3 { color: #7a7e85;}
+.s4 { color: #cf8e6d;}
+.s5 { color: #2aacb8;}
+</style>
+</head>
+<body bgcolor="#1e1f22">
+<table CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<tr><td><center>
+<font face="Arial, Helvetica" color="#000000">
+seller_page.dart</font>
+</center></td></tr></table>
+<pre><span class="s0">import </span><span class="s1">'package:flutter/material.dart'</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">'package:foodliger/components/bottom_shop_nav_bar_seller.dart'</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">'package:foodliger/pages/shop_list_page.dart'</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">'package:foodliger/pages/cart_page.dart'</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">'package:foodliger/pages/seller/menu_list_page.dart'</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">'package:foodliger/pages/seller/order_page.dart'</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">'package:foodliger/pages/order_checker.dart'</span><span class="s2">; </span><span class="s3">// Import the OrderChecker class</span>
+<span class="s0">import </span><span class="s1">'package:foodliger/database/db_controller.dart'</span><span class="s2">;</span>
+
+<span class="s4">class </span><span class="s0">SellerPage </span><span class="s4">extends </span><span class="s0">StatefulWidget </span><span class="s2">{</span>
+  <span class="s4">const </span><span class="s0">SellerPage</span><span class="s2">({</span><span class="s4">super</span><span class="s2">.</span><span class="s0">key</span><span class="s2">});</span>
+
+  <span class="s0">@override</span>
+  <span class="s0">State</span><span class="s2">&lt;</span><span class="s0">SellerPage</span><span class="s2">&gt; </span><span class="s0">createState</span><span class="s2">() =&gt; </span><span class="s0">_ShopPageState</span><span class="s2">();</span>
+<span class="s2">}</span>
+
+<span class="s4">class </span><span class="s0">_ShopPageState </span><span class="s4">extends </span><span class="s0">State</span><span class="s2">&lt;</span><span class="s0">SellerPage</span><span class="s2">&gt; {</span>
+  <span class="s3">// Variable</span>
+  <span class="s0">int _selectedIndex </span><span class="s2">= </span><span class="s5">0</span><span class="s2">;</span>
+  <span class="s0">OrderChecker</span><span class="s2">? </span><span class="s0">orderChecker</span><span class="s2">; </span><span class="s3">// Declare the OrderChecker</span>
+
+  <span class="s3">// This method will update our selected index</span>
+  <span class="s3">// when the user taps on the signin option</span>
+  <span class="s4">void </span><span class="s0">navigateShop</span><span class="s2">(</span><span class="s0">int index</span><span class="s2">) {</span>
+    <span class="s0">setState</span><span class="s2">(() {</span>
+      <span class="s0">_selectedIndex </span><span class="s2">= </span><span class="s0">index</span><span class="s2">;</span>
+    <span class="s2">});</span>
+  <span class="s2">}</span>
+
+  <span class="s3">// Pages to display</span>
+  <span class="s4">final </span><span class="s0">List</span><span class="s2">&lt;</span><span class="s0">Widget</span><span class="s2">&gt; </span><span class="s0">_pages </span><span class="s2">= [</span>
+    <span class="s0">SellerMenuControlPage</span><span class="s2">(),</span>
+    <span class="s0">OrderPage</span><span class="s2">(),</span>
+  <span class="s2">];</span>
+
+  <span class="s0">@override</span>
+  <span class="s4">void </span><span class="s0">initState</span><span class="s2">() {</span>
+    <span class="s4">super</span><span class="s2">.</span><span class="s0">initState</span><span class="s2">();</span>
+    <span class="s0">orderChecker </span><span class="s2">= </span><span class="s0">OrderChecker</span><span class="s2">(); </span><span class="s3">// Instantiate OrderChecker</span>
+    <span class="s0">orderChecker</span><span class="s2">!.</span><span class="s0">startCheckingForOrders</span><span class="s2">(</span><span class="s0">globalSellerId</span><span class="s2">!); </span><span class="s3">// Start checking for new orders</span>
+  <span class="s2">}</span>
+
+  <span class="s0">@override</span>
+  <span class="s4">void </span><span class="s0">dispose</span><span class="s2">() {</span>
+    <span class="s0">orderChecker</span><span class="s2">?.</span><span class="s0">stopChecking</span><span class="s2">(); </span><span class="s3">// Stop checking for new orders when disposing</span>
+    <span class="s4">super</span><span class="s2">.</span><span class="s0">dispose</span><span class="s2">();</span>
+  <span class="s2">}</span>
+
+  <span class="s0">@override</span>
+  <span class="s0">Widget build</span><span class="s2">(</span><span class="s0">BuildContext context</span><span class="s2">) {</span>
+    <span class="s4">return </span><span class="s0">Scaffold</span><span class="s2">(</span>
+      <span class="s0">backgroundColor</span><span class="s2">: </span><span class="s0">Colors</span><span class="s2">.</span><span class="s0">orange</span><span class="s2">[</span><span class="s5">300</span><span class="s2">],</span>
+      <span class="s0">appBar</span><span class="s2">: </span><span class="s0">AppBar</span><span class="s2">(</span>
+        <span class="s0">backgroundColor</span><span class="s2">: </span><span class="s0">Colors</span><span class="s2">.</span><span class="s0">orange</span><span class="s2">[</span><span class="s5">300</span><span class="s2">],</span>
+        <span class="s0">title</span><span class="s2">: </span><span class="s0">Text</span><span class="s2">(</span><span class="s1">&quot;Food Liger&quot;</span><span class="s2">),</span>
+        <span class="s0">centerTitle</span><span class="s2">: </span><span class="s4">true</span><span class="s2">,</span>
+        <span class="s0">leading</span><span class="s2">: </span><span class="s0">IconButton</span><span class="s2">(</span>
+          <span class="s0">icon</span><span class="s2">: </span><span class="s0">Icon</span><span class="s2">(</span><span class="s0">Icons</span><span class="s2">.</span><span class="s0">logout</span><span class="s2">),</span>
+          <span class="s0">onPressed</span><span class="s2">: () {</span>
+            <span class="s0">Navigator</span><span class="s2">.</span><span class="s0">pushNamed</span><span class="s2">(</span><span class="s0">context</span><span class="s2">, </span><span class="s1">'/'</span><span class="s2">);</span>
+          <span class="s2">},</span>
+        <span class="s2">),</span>
+      <span class="s2">),</span>
+      <span class="s0">bottomNavigationBar</span><span class="s2">: </span><span class="s0">ShopOptionSeller</span><span class="s2">(</span>
+        <span class="s0">onTabChange</span><span class="s2">: (</span><span class="s0">index</span><span class="s2">) =&gt; </span><span class="s0">navigateShop</span><span class="s2">(</span><span class="s0">index</span><span class="s2">),</span>
+      <span class="s2">),</span>
+      <span class="s0">body</span><span class="s2">: </span><span class="s0">_pages</span><span class="s2">[</span><span class="s0">_selectedIndex</span><span class="s2">],</span>
+    <span class="s2">);</span>
+  <span class="s2">}</span>
+<span class="s2">}</span>
+</pre>
+</body>
+</html>
